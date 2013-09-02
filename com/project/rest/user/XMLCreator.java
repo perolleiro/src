@@ -11,43 +11,40 @@ import java.sql.*;
 import com.project.dao.*;
 
 public class XMLCreator {
-	public boolean create (String user_id, String password) throws Exception {
+	public boolean create (long user_id) throws Exception {
 		PreparedStatement query = null;
 		Connection conn = null;
 		boolean isTrue = false;
 		
-		String di;
-		Object st;
-		Object et;
+		long di;
+		long st;
+		long et;
 		String name;
-		Object usage;
+		long usage;
 		
 		try {
-			if ((user_id == null) || (password == null)) {
-				return isTrue;
-			} else {
 				conn = postgreSQL.postgreSQLConn();
 				query = conn.prepareStatement("SELECT device_usage.device_id," +
 						" device_usage.start_time, device_usage.end_time" +
 						" selected_group.name, selected_group.usage" +
 						" FROM device_usage" +
 						" WHERE user_id = ? " +
-						" INNER JOIN selected_group" +
-						" ON device_usage.device_id = selected_group.device_id");
+						" INNER JOIN selected_feature" +
+						" ON device_usage.device_id = selected_feature.device_id");
 				query.setObject(1, user_id);
 				ResultSet results = query.executeQuery();
 				while (results.next()) {
-					di = results.getString("device_id");
-					st = results.getTime("start_time");
-					et = results.getTime("end_time");
+					di = results.getLong("device_id");
+					st = results.getLong("start_time");
+					et = results.getLong("end_time");
 					name = results.getString("name");
-					usage = results.getTime("usage");
+					usage = results.getLong("usage");
 				}
 			
 				query.close();
-			}
+			
 		} catch (SQLException sqlError) {
-        	sqlError.printStackTrace();
+        	sqlError.getMessage();
         } catch (Exception e) {
         	e.printStackTrace();
         } finally {
