@@ -3,6 +3,7 @@ package athabasca.ca.util;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.Scanner;
 
 import athabasca.ca.model.User;
@@ -76,7 +77,7 @@ public class Main
 			case "U":
 			case "u":
 			{
-				//userUpdate( scanner );
+				userUpdate( scanner );
 			}
 			break;
 			
@@ -294,6 +295,65 @@ public class Main
 			
 		} else {
 			System.err.println("Could not find user!");
+		}
+		
+		scanner.reset();
+	}
+	
+	private static void userUpdate( Scanner scanner ) throws Exception
+	{
+		V2_user updateUser = new V2_user();
+		long selection = 0;
+		Hashtable<Object, Object> args = null;
+		
+		String f_name = null;
+		String l_name = null;
+		String b_day = null;
+		String tele = null;
+		String email = null;
+		String other = null;
+		
+		System.out.println( "U: User update\n" );
+		System.out.println( "Insert user id... " );
+		
+		if( scanner.hasNextBigInteger( ) )
+		{
+			selection = scanner.nextLong( );
+			scanner.reset();
+		}
+		else
+		{
+			System.err.println( "ERROR: Invalid field!" );
+			System.exit( 0 );
+		}
+		
+		System.out.println("Please enter update information:");
+		
+		if (scanner.hasNextLine()) {
+			f_name = scanner.nextLine();
+			l_name = scanner.nextLine();
+			b_day = scanner.nextLine();
+			tele = scanner.nextLine();
+			email = scanner.nextLine();
+			other = scanner.nextLine();
+		} else {
+			System.err.println( "ERROR: Invalid field!" );
+			System.exit( 0 );
+		}
+		
+		args.put("first_name", f_name);
+		args.put("last_name", l_name);
+		args.put("birthday", b_day);
+		args.put("telephone", tele);
+		args.put("email", email);
+		args.put("other_preferences", other);
+		
+		boolean isTrue = updateUser.update(selection, args);
+		
+		if (isTrue == true) {
+			System.out.println("User has been updated!");
+		} else {
+			System.out.println("User was not updated!");
 		}
 		
 		scanner.reset();
