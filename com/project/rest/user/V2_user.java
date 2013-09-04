@@ -1,6 +1,7 @@
 package com.project.rest.user;
 
 import java.sql.*;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
@@ -130,25 +131,50 @@ public class V2_user {
             
             String sql = ("UPDATE user_profiles"
     				+ " SET " + argument + " = ?"
-                    + " WHERE user_id = " + Long.toString(id));
+                    + " WHERE user_id = " + args.get("user_id").toString());
             
             int i = 0;
+            Enumeration<Object> e = args.keys();
+            String key;
             while (i < args.size()) {
-            	if (args.containsKey("first_name")) {
-                	argument = "first_name";
-                	query = conn.prepareStatement(sql);
-                	query.setObject(1, args.get("first_name"));
-                	query.executeUpdate();
-                	query.close();
-                	isTrue = true;
-                } else if (args.containsKey("last_name")) {
-                	argument = "last_name";
-                	query = conn.prepareStatement(sql);
-                	query.setObject(1, args.get("last_name"));
-                	query.executeUpdate();
-                	query.close();
-                	isTrue = true;
-                }
+            	key = (String) e.nextElement();
+            	switch (key) {
+            		case "user_id":
+            		{
+            			argument = "user_id";
+                    	query = conn.prepareStatement(sql);
+                    	query.setObject(1, args.get("user_id"));
+                    	query.executeUpdate();
+                    	query.close();
+                    	isTrue = true;
+            		}
+            		case "first_name":
+            		{
+            			argument = "first_name";
+                    	query = conn.prepareStatement(sql);
+                    	query.setObject(1, args.get("first_name"));
+                    	query.executeUpdate();
+                    	query.close();
+                    	isTrue = true;
+            		}
+            		default:
+            	}
+            	
+            	//if (args.containsKey("first_name")) {
+                	//argument = "first_name";
+                	//query = conn.prepareStatement(sql);
+                	//query.setObject(1, args.get("first_name"));
+                	//query.executeUpdate();
+                	//query.close();
+                	//isTrue = true;
+                //} else if (args.containsKey("last_name")) {
+                	//argument = "last_name";
+                	//query = conn.prepareStatement(sql);
+                	//query.setObject(1, args.get("last_name"));
+                	//query.executeUpdate();
+                	//query.close();
+                	//isTrue = true;
+                
             	// Clear argument
             	argument = "";
             	i++;
