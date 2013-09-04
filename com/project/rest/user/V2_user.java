@@ -2,6 +2,8 @@ package com.project.rest.user;
 
 import java.sql.*;
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Set;
 
 import com.project.dao.*;
 import athabasca.ca.model.User;
@@ -118,74 +120,43 @@ public class V2_user {
 	// I think we should use a hash table to map keys instead of this way???
 	// A Hash table will hold the user id's and corresponding passwords
 	// Need to handle errors
-	public static Boolean update(User user, Hashtable<Object, Integer> keys) throws Exception {
+	public static Boolean update(long id, Hashtable<Object, Object> args) throws Exception {
 		Connection conn = null;
 		PreparedStatement query = null;
         boolean isTrue = false;
             
         try {
-            	
-        	conn = postgreSQL.postgreSQLConn();
-        	// Check again...
-        	if (keys.get(user.getFirstName()) == 1) {
-        		query = conn.prepareStatement("UPDATE user_profiles"
-        				+ " SET first_name = " + user.getFirstName()
-                        + " WHERE user_id = ? ");
-        		query.setObject(1, user.getUserId());
-        		query.executeUpdate();
-                isTrue = true;
-                query.close();
-        	} else if (user.getLastName() != null) {
-        		query = conn.prepareStatement("UPDATE user_profiles"
-        				+ " SET last_name = " + user.getLastName()
-                        + " WHERE user_id = ? ");
-        		query.setObject(1, user.getUserId());
-        		query.executeUpdate();
-                isTrue = true;
-                query.close();
-        	} else if (user.getBirthday() != null) {
-        		query = conn.prepareStatement("UPDATE user_profiles"
-        				+ " SET birthday = " + user.getBirthday()
-                        + " WHERE user_id = ? ");
-        		query.setObject(1, user.getUserId());
-        		query.executeUpdate();
-        		isTrue = true;
-        		query.close();
-        	} else if (user.getOtherPreferences() != null) {
-        		query = conn.prepareStatement("UPDATE user_profiles"
-        				+ " SET other_preferences = " + user.getOtherPreferences()
-                        + " WHERE user_id = ? ");
-        		query.setObject(1, user.getUserId());
-        		query.executeUpdate();
-                isTrue = true;
-                query.close();
-        	} else if (user.getTelephones() != null) {
-        		String[] telephones = user.getTelephones();
-        		for (int i = 0; i < telephones.length; i++) {
-        			query = conn.prepareStatement("UPDATE contact_info"
-            				+ " SET telephone = " + telephones[i]
-                            + " WHERE user_id = ? ");
-        			query.setObject(1, user.getUserId());
-            		query.executeUpdate();
-            		query.close();
-        		}
-        		isTrue = true;
-        	} else if (user.getEmails() != null) {
-        		String[] emails = user.getEmails();
-        		for (int i = 0; i < emails.length; i++) {
-        			query = conn.prepareStatement("UPDATE contact_info"
-            				+ " SET telephone = " + emails[i]
-                            + " WHERE user_id = ? ");
-        			query.setObject(1, user.getUserId());
-            		query.executeUpdate();
-            		query.close();
-        		}
-        		isTrue = true;
-        	} 
+        	String argument = null;
+            
+            String sql = ("UPDATE user_profiles"
+    				+ " SET " + argument + " = ?"
+                    + " WHERE user_id = " + Long.toString(id));
+            
+            int i = 0;
+            while (i < args.size()) {
+            	if (args.containsKey("first_name")) {
+                	argument = "first_name";
+                	query = conn.prepareStatement(sql);
+                	query.setObject(1, args.get("first_name"));
+                	query.executeUpdate();
+                	query.close();
+                	isTrue = true;
+                } else if (args.containsKey("last_name")) {
+                	argument = "last_name";
+                	query = conn.prepareStatement(sql);
+                	query.setObject(1, args.get("last_name"));
+                	query.executeUpdate();
+                	query.close();
+                	isTrue = true;
+                }
+            	// Clear argument
+            	argument = "";
+            	i++;
+            }
         	
         } catch (SQLException sqlError) {
-        		sqlError.printStackTrace();
-    	} catch (Exception e) {
+        	sqlError.getMessage();
+        } catch (Exception e) {
     		e.printStackTrace();
     	} finally {
     		if (conn != null) conn.close();
